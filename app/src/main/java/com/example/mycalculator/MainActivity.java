@@ -1,9 +1,11 @@
 package com.example.mycalculator;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.mozilla.javascript.Context;
@@ -11,11 +13,15 @@ import org.mozilla.javascript.Scriptable;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView tvDot, tvZero, tvBack, tvEgale, tvUn, tvDeux, tvTrois,
+    private TextView tvDot, tvZero, tvEgale, tvUn, tvDeux, tvTrois,
             tvPlus, tvQuatre, tvCinq, tvSix, tvSet, tvMoin, tvHuit, tvNeuf,
             tvFois, tvCE, tvAwes, tvAsa, tvSur;
     private TextView tvResult, tvExpression;
     private String ch = "";
+    private String finalResult="" ;
+    private ImageView img;
+
+
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         tvAwes = findViewById(R.id.tvAwes);
         tvAsa = findViewById(R.id.tvAsa);
         tvDot = findViewById(R.id.tvDot);
-        tvBack = findViewById(R.id.tvBack);
+        img = findViewById(R.id.tvBack);
 
         //******************
         tvZero.setOnClickListener(new View.OnClickListener() {
@@ -126,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
                 ch = ch.replaceAll("x", "*");
                 Context rhino = Context.enter();
                 rhino.setOptimizationLevel(-1);
-                String finalResult = "";
                 try {
                     Scriptable scriptable = rhino.initSafeStandardObjects();
                     finalResult = rhino.evaluateString(scriptable, ch, "javascript", 1, null).toString();
@@ -173,8 +178,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 ch = deleteAll(ch);
+                finalResult=deleteAll(finalResult);
                 tvExpression.setText(ch.toString());
                 tvResult.setText(ch.toString());
+
             }
         });
         tvAwes.setOnClickListener(new View.OnClickListener() {
@@ -199,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
                 tvExpression.setText(ch.toString());
             }
         });
-        tvBack.setOnClickListener(new View.OnClickListener() {
+        img.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ch = deleteLastCaractere(ch);
@@ -207,6 +214,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        if (savedInstanceState != null) {
+            ch = savedInstanceState.getString("ch");
+            tvExpression.setText(ch.toString());
+
+            finalResult = savedInstanceState.getString("finalResult");
+            tvResult.setText(finalResult.toString());
+        }
+
+    }
+    @Override
+    protected void onSaveInstanceState( Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString("ch",ch);
+        outState.putString("finalResult",finalResult);
 
     }
 
